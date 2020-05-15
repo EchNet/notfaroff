@@ -1,0 +1,31 @@
+{
+  "name": "notion",
+  "version": "1.0.0",
+  "description": "Experimenting with Tone.js",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/EchNet/notion.git"
+  },
+  "author": "James Echmalian",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/EchNet/notion/issues"
+  },
+  "homepage": "https://github.com/EchNet/notion#readme",
+  "devDependencies": {
+    "babel-core": "^6.26.3",
+    "babel-plugin-transform-class-properties": "^6.24.1",
+    "babel-preset-env": "^1.7.0",
+    "babel-preset-react": "^6.24.1",
+    "parcel-bundler": "^1.12.4"
+  },
+  "dependencies": {
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
+    "tone": "^13.8.25"
+  }
+}
