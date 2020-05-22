@@ -1,8 +1,10 @@
 import * as React from "react"
 import { render } from "react-dom"
 import * as Tone from "tone"
+import { PlayNoteButton } from "./components";
 
 var synth = new Tone.Synth({
+    /***
     oscillator: {
     type: 'fmsquare',
     modulationType: 'sawtooth',
@@ -15,16 +17,15 @@ var synth = new Tone.Synth({
     sustain: 0.1,
     release: 0.1
   }
+  ****/
 }).toMaster()
 
-var playNotes = () => {
-  synth.triggerAttackRelease('C4', 0.5, 0)
-  synth.triggerAttackRelease('E4', 0.5, 1)
-  synth.triggerAttackRelease('G4', 0.5, 2)
-  synth.triggerAttackRelease('B4', 0.5, 3)
-}
-
-const App:React.SFC = () => <button type="button" onClick={playNotes}>Click me</button>;
+const App:React.SFC = () => <div><p>Here is some text in the React app.</p>
+  <PlayNoteButton synth={synth}>C</PlayNoteButton>
+  <PlayNoteButton synth={synth} note="D3"/>
+  <PlayNoteButton synth={synth} note="E3"/>
+  <PlayNoteButton synth={synth} note="F3"/>
+</div>;
 
 render(<App/>, document.getElementById("root"));
 
