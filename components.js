@@ -7,14 +7,17 @@ export class PlayNoteButton extends React.Component {
   getNote() {
     return this.props.note || "C3";
   }
-  playNote = () => {
+  attackNote = () => {
     const synth = this.props.synth;
     const note = this.getNote();
-    const duration = 0.5;
-    synth.triggerAttackRelease(note, duration);
+    synth.triggerAttack(note);
+  }
+  releaseNote = () => {
+    const synth = this.props.synth;
+    synth.triggerRelease();
   }
   render () {
     const label = this.props.children || this.getNote();
-    return <div className="hotbutt"><button onClick={this.playNote}>{label}</button></div>;
+    return <div className="hotbutt"><button onMouseEnter={this.attackNote} onMouseLeave={this.releaseNote}>{label}</button></div>;
   }
 }
