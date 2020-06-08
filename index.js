@@ -2,6 +2,7 @@ import * as React from "react"
 import { render } from "react-dom"
 import * as Tone from "tone"
 import { PlayNoteButton } from "./components";
+import "./components.css";
 
 var synth = new Tone.Synth({
     /***
@@ -21,6 +22,7 @@ var synth = new Tone.Synth({
 }).toMaster()
 
 const App:React.SFC = () => <div><p>Here is some text in the React app.</p>
+  <PlayNoteButton synth={synth} note="B2"/>
   <PlayNoteButton synth={synth}>C</PlayNoteButton>
   <PlayNoteButton synth={synth} note="D3"/>
   <PlayNoteButton synth={synth} note="E3"/>

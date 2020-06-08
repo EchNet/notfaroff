@@ -1,0 +1,10 @@
+.PlayNoteButton {
+  width: 80px;
+  height: 80px;
+  border-radius: 5px;
+  border: solid 1px blue;
+  color: blue;
+  text-align: center;
+  margin-top: 20px;
+  line-height: 80px;
+}

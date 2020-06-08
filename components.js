@@ -18,6 +18,6 @@ export class PlayNoteButton extends React.Component {
   }
   render () {
     const label = this.props.children || this.getNote();
-    return <div className="hotbutt"><button onMouseEnter={this.attackNote} onMouseLeave={this.releaseNote}>{label}</button></div>;
+    return <div className="PlayNoteButton" onMouseEnter={this.attackNote} onMouseLeave={this.releaseNote}>{label}</div>;
   }
 }
