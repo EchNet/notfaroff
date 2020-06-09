@@ -1,23 +1,123 @@
 import * as React from "react"
+import * as Tone from "tone"
 
-export class PlayNoteButton extends React.Component {
+class NoteButton extends React.Component {
   constructor(props) {
     super(props);
+  }
+  getContext() {
+    return this.props.context;
   }
   getNote() {
     return this.props.note || "C3";
   }
-  attackNote = () => {
-    const synth = this.props.synth;
-    const note = this.getNote();
-    synth.triggerAttack(note);
+  targetNote() {
+    console.log("targetNote", this.getNote());
+    this.getContext().targetNote(this.getNote());
   }
-  releaseNote = () => {
-    const synth = this.props.synth;
-    synth.triggerRelease();
+  releaseNote() {
+    console.log("releaseNote", this.getNote());
+    this.getContext().releaseNote(this.getNote());
   }
   render () {
-    const label = this.props.children || this.getNote();
-    return <div className="PlayNoteButton" onMouseEnter={this.attackNote} onMouseLeave={this.releaseNote}>{label}</div>;
+    return (
+      <div className="NoteButton"
+           onMouseEnter={() => this.targetNote()}
+           onMouseLeave={() => this.releaseNote()}>{this.props.children}</div>
+    )
+  }
+}
+
+export class Instrument extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = this.initialState();
+  }
+
+  initialState() {
+    const synth = new Tone.Synth({
+        /***
+        oscillator: {
+        type: 'fmsquare',
+        modulationType: 'sawtooth',
+        modulationIndex: 3,
+        harmonicity: 3.4
+      },
+      envelope: {
+        attack: 0.001,
+        decay: 0.1,
+        sustain: 0.1,
+        release: 0.1
+      }
+      ****/
+    }).toMaster()
+
+    return {
+      active: false,
+      synth: synth,
+      note: null,
+      glissando: false
+    }
+  }
+  targetNote(note) {
+    if (note !== this.state.note) {
+      if (this.state.glissando && this.state.note) {
+        this.state.synth.portamento = 0.5;
+        this.state.synth.setNote(note);
+      }
+      else {
+        this.state.synth.triggerAttack(note);
+      }
+      this.setState({ note });
+    }
+  }
+  releaseNote(note) {
+    if (this.state.glissando) {
+      setTimeout(() => {
+        if (this.state.note === note) {
+          this.releaseAll();
+        }
+      }, 10);
+    }
+    else if (this.state.note === note) {
+      this.releaseAll();
+    }
+  }
+  releaseAll() {
+    this.setState({ note: null })
+    this.state.synth.triggerRelease()
+  }
+  setGlissando(glissando) {
+    this.releaseAll();
+    this.setState({ glissando })
+  }
+  activate() {
+    this.setState({ active: true })
+  }
+  render() {
+    return (
+      <div class="Instrument">
+        {this.state.active && (
+          <div>
+            <div class="Keyboard" onMouseLeave={() => this.releaseAll()}>
+              <NoteButton context={this} note="B2">B</NoteButton>
+              <NoteButton context={this} note="C3">C</NoteButton>
+              <NoteButton context={this} note="D3">D</NoteButton>
+              <NoteButton context={this} note="E3">E</NoteButton>
+              <NoteButton context={this} note="F3">F</NoteButton>
+              <NoteButton context={this} note="G3">G</NoteButton>
+            </div>
+            <div class="GlissandoControl">
+              <input type="checkbox"
+                     checked={this.state.glissando}
+                     onChange={(e) => this.setGlissando(e.target.checked)}/> Glissando
+            </div>
+          </div>
+        )}
+        {!this.state.active && (
+          <div onClick={() => this.activate()}>Click here to activate (that's life)</div>
+        )}
+      </div>
+    )
   }
 }
