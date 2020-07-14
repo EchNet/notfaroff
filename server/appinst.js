@@ -13,6 +13,9 @@ function getState(instId, params) {
   return { id: instId }
 }
 
+function validateId(instId) {
+}
+
 module.exports = {
-  list, create, getState
+  list, create, getState, validateId
 }

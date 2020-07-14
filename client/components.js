@@ -29,12 +29,6 @@ class NoteButton extends React.Component {
   }
 }
 
-function getEndpoint() {
-  const url = window.location.href;
-  const arr = url.split("/");
-  return arr[0] + "//" + arr[2];
-}
-
 export class Instrument extends React.Component {
   constructor(props) {
     super(props);

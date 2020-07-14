@@ -1,3 +1,5 @@
+const {MongoClient} = require("mongodb");
+const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost:27017/notion"
 
 const get_random_song_title = (res) => {
   MongoClient.connect(MONGODB_URI, {useUnifiedTopology: true}, (err, db) => {

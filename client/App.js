@@ -1,20 +1,18 @@
 import * as React from "react"
 import ImportedCookies from "cookies-js";
 
-import { Instrument } from "./components"
-import WaitScreen from "./WaitScreen"
+import MainView from "./MainView"
 import ErrorScreen from "./ErrorScreen"
 import { apiConnector } from "./connectors"
 
 
 export class App extends React.Component {
+  // Once client ID is obtained, show main view.
   constructor(props) {
     super(props)
     this.state = {
       clientId: null,
-      appInstId: null,
-      loading: false,
-      loaded: false,
+      busy: false,
       error: null
     }
   }
@@ -25,53 +23,31 @@ export class App extends React.Component {
     this.startUp()
   }
   startUp() {
-    console.log('startUp...')
-    if (this.state.loading || this.state.loaded || this.state.error) {
+    if (this.state.busy || this.state.clientId || this.state.error) {
       // Not able to proceed at this point.
-      console.log('... nothing to do')
-      return
     }
-    if (!this.state.clientId) {
-      console.log("... got no clientId")
+    else {
       let cookieClientId = ImportedCookies.get("client")
       if (cookieClientId) {
-        console.log("... got cookie client id", cookieClientId)
         this.setState({ clientId: cookieClientId });
       }
       else {
-        this.setState({ loading: true });
-        console.log("... fetching")
+        this.setState({ busy: true });
         apiConnector.getClient()
           .then((response) => {
-            console.log("Fetched client id", response.data.id)
-            this.setState({ clientId: response.data.id, loading: false });
+            this.setState({ clientId: response.data.id || "invalid", busy: false });
             ImportedCookies.set("client", response.data.id)
           })
           .catch((error) => {
-            this.setState({ error: error.toString(), loading: false });
+            this.setState({ error: error.toString(), busy: false });
           })
-        return;
       }
-    }
-    if (!this.state.appInstId) {
-      console.log("... got no appInstId")
-      this.setState({ loading: true });
-      console.log("... fetching")
-      apiConnector.createAppInstance(this.state.clientId)
-        .then((response) => {
-          console.log("fetched app id", response.data.id)
-          this.setState({ clientId: response.data.id, loading: false, loaded: true });
-        })
-        .catch((error) => {
-          this.setState({ error: error.toString(), loading: false });
-        })
     }
   }
   render() {
     return (
-      <div style={{ height: "100%" }}>
-        { !!this.state.loading && <WaitScreen/> }
-        { !!this.state.loaded && <Instrument appInstId={this.state.appInstId}/> }
+      <div>
+        { !!this.state.clientId && <MainView clientId={this.state.clientId}/> }
         { !!this.state.error && <ErrorScreen fatal="fatal" message={this.state.error}/> }
       </div>
     )

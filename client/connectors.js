@@ -37,16 +37,16 @@ class ApiConnector {
     })
   }
   getClient() {
-    return this._doGet("/client")
+    return this._doGet("/api/client")
   }
   listAppInstances(clientId) {
-    return this._doGet("/app/jackson/", { client: clientId })
+    return this._doGet("/api/app/jackson/", { client: clientId })
   }
   createAppInstance(clientId) {
-    return this._doPost("/app/jackson", { client: clientId })
+    return this._doPost("/api/app/jackson", { client: clientId })
   }
   getAppInstanceState(appInstId) {
-    return this._doGet(`/api/jackson/${appInstId}`)
+    return this._doGet(`/api/api/jackson/${appInstId}`)
   }
 }
 
