@@ -1,0 +1,13 @@
+.GameView {
+}
+.GameView .canvasContainer {
+  position: relative;
+  width: 300px;
+  height: 200px;
+  border: solid 1px blue;
+}
+.GameView .canvasContainer canvas {
+  position: absolute;
+  width: 300px;
+  height: 200px;
+}

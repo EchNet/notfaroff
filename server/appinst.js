@@ -1,21 +1,47 @@
 const crypto = require("crypto");
+const EventEmitter = require("events");
 
-function list(appType, params) {
-  return []
+var notStorage = {
 }
 
-function create(appType, params) {
-  const id = crypto.randomBytes(12).toString("hex");  // TODO: register app instances
-  return { id }
+var eventEmitter = new EventEmitter()
+
+class AppInst {
+  constructor(id) {
+    this.id = id
+  }
+
+  static list(appType, params) {
+    return []
+  }
+
+  static create(appType, params) {
+    const id = crypto.randomBytes(12).toString("hex");  // TODO: register app instances
+    return { id }
+  }
+
+  addDot(x, y) {
+    if (!notStorage[this.id]) {
+      notStorage[this.id] = []
+    }
+    notStorage[this.id].push({ x, y })
+    eventEmitter.emit("stateChange", this.getState(null))
+  }
+
+  handleGesture(gesture) {
+    if (gesture.type == "click") {
+      this.addDot(gesture.x, gesture.y)
+    }
+  }
+
+  getState(params) {
+    return { id: this.id, dots: notStorage[this.id] }
+  }
+
+  assertExists() {
+  }
 }
 
-function getState(instId, params) {
-  return { id: instId }
-}
+AppInst.eventEmitter = eventEmitter;
 
-function validateId(instId) {
-}
-
-module.exports = {
-  list, create, getState, validateId
-}
+module.exports = AppInst

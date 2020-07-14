@@ -16,7 +16,7 @@ const server = express()
     res.render("index")
   })
   .get("/inst/:appInstId", (req, res) => {
-    AppInst.validateId(req.params.appInstId)
+    new AppInst(req.params.appInstId).assertExists()
     res.render("index")
   })
   .get("/api/client", (req, res) => {  // Create new client token.
@@ -29,7 +29,7 @@ const server = express()
     res.json(AppInst.create(req.params.appType, req.body))
   })
   .get("/api/app/inst/:instId", (req, res) => {  // Get app instance state.
-    res.json(AppInst.getState(req.params.instId, req.query))
+    res.json(AppInst(req.params.instId).getState(req.query))
   })
   .listen(PORT, () => console.log(`Listening on ${PORT}`));
 
@@ -37,17 +37,36 @@ const io = socketIO(server);
 
 io.on("connection", (socket) => {
   console.log('Client connected');
-  socket.on("joinGame", (gameId) => {
-    console.log(`Join game ${gameId}`)
-    socket.join(gameId);
-    socket.on("targetNote", (note) => {
-      console.log(`Target note ${note}`)
-      io.sockets.in(gameId).emit("targetNote", note);
-    })
-    socket.on("releaseNote", (note) => {
-      console.log(`Release note ${note}`)
-      io.sockets.in(gameId).emit("releaseNote", note);
-    })
+  prepareForJoin(socket)
+  socket.on("disconnect", () => console.log("Client disconnected"))
+})
+
+function prepareForJoin(socket) {
+  var joined = false;
+  socket.on("join", (appInstId, clientId) => {
+    console.log(`Join ${appInstId} ${clientId}`)
+    joined = true;
+    doJoin(socket, appInstId, clientId)
   });
-  socket.on("disconnect", () => console.log("Client disconnected"));
-});
+  setTimeout(() => {
+    if (!joined) {
+      console.log("Client failed to join in time.")
+      socket.disconnect(true)
+    }
+  }, 1000);
+}
+
+function doJoin(socket, appInstId, clientId) {
+  socket.join(appInstId);
+  io.sockets.in(appInstId).emit("stateChange", new AppInst(appInstId).getState().dots);
+  socket.on("gesture", (gesture) => {
+    console.log(appInstId, "gestureEcho", gesture);
+    io.sockets.in(appInstId).emit("gestureEcho", Object.assign({ clientId }, gesture));
+    new AppInst(appInstId).handleGesture(gesture)
+  })
+}
+
+AppInst.eventEmitter.on("stateChange", (newState) => {
+  console.log(newState.id, "stateChange", newState.dots);
+  io.sockets.in(newState.id).emit("stateChange", newState.dots);
+})
