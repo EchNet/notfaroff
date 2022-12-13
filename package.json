@@ -28,7 +28,7 @@
   "dependencies": {
     "axios": "^0.19.2",
     "cookies-js": "^1.2.3",
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "mongodb": "^3.5.9",
     "morgan": "^1.10.0",
     "pug": "^3.0.0",
